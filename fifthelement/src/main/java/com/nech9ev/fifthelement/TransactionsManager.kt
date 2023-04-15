@@ -1,60 +1,50 @@
 package com.nech9ev.fifthelement
 
-import android.os.Build
 import android.util.Log
-import com.nech9ev.fifthelement.data.NetworkModule
-import com.nech9ev.fifthelement.data.NetworkTransactionsRequest
-import com.nech9ev.fifthelement.domain.NetworkTransaction
-import io.ktor.client.request.*
-import io.ktor.http.*
+import com.nech9ev.fifthelement.data.DeviceConfigUtils
+import com.nech9ev.fifthelement.database.DatabaseRepositoryProvider
+import com.nech9ev.fifthelement.domain.DeviceConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.concurrent.atomic.AtomicLong
 
-class TransactionsManager {
+class TransactionsManager(
+    transactionsUploadSize: Long = 2L,
+) {
 
-    private val client = NetworkModule.provideHttpClient()
+    private val transactionsSender = TransactionSender()
 
-    suspend fun addTransactions(transactions: List<NetworkTransaction>) = withContext(Dispatchers.IO) {
-        Log.e("TransactionsManager", "NetworkTransaction start")
-        transactions.forEach {
-            it.deviceModel = getDeviceName()
-            Log.e("TransactionsManager", it.toString())
-        }
-        try {
-            client.post {
-                contentType(ContentType.Application.Json)
-                url("http://172.20.10.5:8080/api/write/networkTraffic")
-                body = NetworkTransactionsRequest(transactions)
+    private val transactionsUploadSize: AtomicLong = AtomicLong().apply {
+        set(transactionsUploadSize)
+    }
+
+    private val transactionsIdLastNotSend: AtomicLong = AtomicLong().apply {
+        set(-1L)
+    }
+
+    private lateinit var deviceConfig: DeviceConfig
+
+    fun setDeviceConfig(config: DeviceConfig) {
+        deviceConfig = config
+    }
+
+    suspend fun onNewTransaction(transactionId: Long) = withContext(Dispatchers.IO) {
+        Log.e("TransactionsManager", "transactionId: $transactionId")
+        Log.e("TransactionsManager", "transactionsIdLastNotSend: ${transactionsIdLastNotSend.get()}")
+        if ((transactionId % transactionsUploadSize.get()) != 0L) {
+            if (transactionsIdLastNotSend.get() == -1L) {
+                transactionsIdLastNotSend.set(transactionId)
             }
-        } catch (e: Throwable) {
-            Log.e("TransactionsManager", "NetworkTransaction exception ${e.message}")
         }
-
-        Log.e("TransactionsManager", "NetworkTransaction end")
-    }
-
-
-    //todo create utils + device id from room
-    private suspend fun getDeviceName(): String {
-        val manufacturer: String = Build.MANUFACTURER
-        val model: String = Build.MODEL
-        return if (model.lowercase(Locale.getDefault()).startsWith(manufacturer.lowercase(Locale.getDefault()))) {
-            capitalize(model)
-        } else {
-            capitalize(manufacturer) + " " + model
-        }
-    }
-
-    private fun capitalize(s: String?): String {
-        if (s == null || s.isEmpty()) {
-            return ""
-        }
-        val first = s[0]
-        return if (Character.isUpperCase(first)) {
-            s
-        } else {
-            first.uppercaseChar().toString() + s.substring(1)
-        }
+        val repository = DatabaseRepositoryProvider.provide()
+        val isSuccess = transactionsSender.sendTransactions(
+            transactions = repository
+                .getTransactionsWithIdBetween(
+                    idFrom = transactionsIdLastNotSend.get(),
+                    idTo = transactionId,
+                ),
+            deviceConfig = DeviceConfig(id = DeviceConfigUtils.getDeviceUid(), model = DeviceConfigUtils.getDeviceName()),
+        )
+        Log.e("TransactionsManager", "sendTransactions isSucces: $isSuccess")
     }
 }

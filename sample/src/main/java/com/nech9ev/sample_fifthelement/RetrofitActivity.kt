@@ -20,7 +20,7 @@ class RetrofitActivity : Activity() {
     private val compositeDisposable = CompositeDisposable()
 
     private val catsApi: CatsApi by lazy {
-        val retrofit = RetrofitProvider.retrofit
+        val retrofit = RetrofitProvider.provideRetrofit(applicationContext)
         CatsApi.provideCatApi(retrofit)
     }
 

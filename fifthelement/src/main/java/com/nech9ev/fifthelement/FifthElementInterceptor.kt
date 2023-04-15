@@ -1,35 +1,49 @@
 package com.nech9ev.fifthelement
 
-import com.nech9ev.fifthelement.domain.NetworkRequest
-import com.nech9ev.fifthelement.domain.NetworkResponse
-import com.nech9ev.fifthelement.domain.NetworkTransaction
+import android.content.Context
 import com.nech9ev.fifthelement.domain.NetworkType
+import com.nech9ev.fifthelement.domain.Transaction
+import com.nech9ev.fifthelement.visitors.HttpRequestTransactionVisitor
+import com.nech9ev.fifthelement.visitors.HttpResponseTransactionVisitor
 import okhttp3.Interceptor
 import okhttp3.Response
+
 
 class FifthElementInterceptor(
     builder: Builder,
 ) : Interceptor {
 
-    private val transactionsCollector = TransactionsCollector(
-        builder.bufferCapacity,
-        builder.requestsSizeForUpload,
+    private val transactionsCollector = TransactionCollector(
+        builder.applicationContext,
     )
 
+    private val requestVisitor = HttpRequestTransactionVisitor()
+    private val responseVisitor = HttpResponseTransactionVisitor()
+
     override fun intercept(chain: Interceptor.Chain): Response {
+        val transaction = Transaction(type = NetworkType.HTTP_CLIENT)
         val request = chain.request()
-        val response = chain.proceed(request)
-        transactionsCollector.addTransaction(
-            NetworkTransaction(
-                type = NetworkType.HTTP_CLIENT,
-                request = NetworkRequest.createFromHttpRequest(request),
-                response = NetworkResponse.createFromHttpResponse(response)
-            )
-        )
+
+        requestVisitor.visitTransaction(request, transaction)
+        transactionsCollector.collectRequest(transaction)
+
+        val response = try {
+            chain.proceed(request)
+        } catch (exception: Throwable) {
+            transaction.error = exception.toString()
+            transactionsCollector.collectResponse(transaction)
+            throw exception
+        }
+
+        responseVisitor.visitTransaction(response, transaction)
+        transactionsCollector.collectResponse(transaction)
+
         return response
     }
 
-    class Builder {
+    class Builder(
+        val applicationContext: Context,
+    ) {
 
         internal var bufferCapacity: Int = 20
         internal var requestsSizeForUpload: Int = 5

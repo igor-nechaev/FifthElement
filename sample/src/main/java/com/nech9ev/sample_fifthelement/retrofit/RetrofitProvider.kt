@@ -1,5 +1,6 @@
 package com.nech9ev.sample_fifthelement.retrofit
 
+import android.content.Context
 import com.google.gson.GsonBuilder
 import com.nech9ev.fifthelement.FifthElementInterceptor
 import okhttp3.OkHttpClient
@@ -11,13 +12,13 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitProvider {
 
-    val retrofit: Retrofit by lazy {
+    fun provideRetrofit(applicationContext: Context): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addNetworkInterceptor(
-                FifthElementInterceptor.Builder()
+                FifthElementInterceptor.Builder(applicationContext)
                     .bufferCapacity(3)
                     .requestsSizeForUpload(1)
                     .build()
@@ -30,7 +31,7 @@ object RetrofitProvider {
         val gsonConverterFactory = GsonConverterFactory.create(gson)
         val rxJavaCallAdapterFactory = RxJava3CallAdapterFactory.create()
 
-        Retrofit.Builder()
+         return Retrofit.Builder()
             .addConverterFactory(gsonConverterFactory)
             .addCallAdapterFactory(rxJavaCallAdapterFactory)
             .baseUrl("https://catfact.ninja/")

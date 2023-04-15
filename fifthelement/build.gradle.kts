@@ -46,5 +46,8 @@ dependencies {
     implementation("com.google.dagger:hilt-android-compiler:2.44")
     implementation("io.ktor:ktor-client-okhttp:1.6.7")
     implementation("io.ktor:ktor-client-serialization:1.6.7")
+    implementation("androidx.room:room-ktx:2.5.1")
+    implementation("androidx.room:room-runtime:2.5.1")
+    kapt("androidx.room:room-compiler:2.5.1")
     testImplementation("junit:junit:4.13.2")
 }
