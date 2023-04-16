@@ -6,6 +6,7 @@ import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import kotlinx.serialization.json.Json
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -39,9 +40,9 @@ internal object NetworkModule {
             .writeTimeout(3, TimeUnit.SECONDS)
             .build()
 
-    fun provideHttpClient() = httpClient
+    internal fun provideHttpClient() = httpClient
+
+    internal fun provideOkHttpClient() = okHttpClient
 
     private fun provideJson() = json
-
-    private fun provideOkHttpClient() = okHttpClient
 }

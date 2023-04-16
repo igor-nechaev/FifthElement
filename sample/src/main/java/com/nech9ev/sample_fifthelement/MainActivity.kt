@@ -9,19 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
-    private var uid: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        uid = Process.myUid()
-        Log.e("MainActivity", uid.toString())
 
         setContentView(R.layout.activity_main)
         findViewById<View>(R.id.url_connection).setOnClickListener {
             startActivity(Intent(this, UrlConnectionActivity::class.java))
         }
         findViewById<View>(R.id.make_crash).setOnClickListener {
-
+            0 / 0
         }
         findViewById<View>(R.id.web_view_button).setOnClickListener {
             startActivity(Intent(this, WebViewActivity::class.java))

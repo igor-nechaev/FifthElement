@@ -11,7 +11,7 @@ internal object DatabaseRepositoryProvider {
         return repository ?: initialize(applicationContext)
     }
 
-    @Synchronized //todo lock on any
+    @Synchronized
     private fun initialize(applicationContext: Context): DatabaseRepository {
         val database = FifthElementDatabase.createDatabase(applicationContext)
         return DatabaseRepository(

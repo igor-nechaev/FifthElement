@@ -1,13 +1,11 @@
 package com.nech9ev.fifthelement.gateways
 
 import android.content.Context
-import android.util.Log
 import com.nech9ev.fifthelement.TransactionCollectorProvider
-import com.nech9ev.fifthelement.internal.TransactionCollector
-import com.nech9ev.fifthelement.internal.domain.NetworkType
-import com.nech9ev.fifthelement.internal.domain.Transaction
 import com.nech9ev.fifthelement.gateways.visitors.HttpRequestTransactionVisitor
 import com.nech9ev.fifthelement.gateways.visitors.HttpResponseTransactionVisitor
+import com.nech9ev.fifthelement.internal.domain.NetworkType
+import com.nech9ev.fifthelement.internal.domain.Transaction
 import okhttp3.Interceptor
 import okhttp3.Response
 
@@ -26,7 +24,6 @@ class FifthElementInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val transaction = Transaction(type = NetworkType.HTTP_CLIENT)
         val request = chain.request()
-        Log.e("FifthElementInterceptor", request.toString())
 
         requestVisitor.visitTransaction(request, transaction)
         transactionsCollector.collectRequest(transaction)
@@ -40,7 +37,6 @@ class FifthElementInterceptor(
         }
 
         responseVisitor.visitTransaction(response, transaction)
-        Log.e("FifthElementInterceptor", transaction.toString())
         transactionsCollector.collectResponse(transaction)
 
         return response

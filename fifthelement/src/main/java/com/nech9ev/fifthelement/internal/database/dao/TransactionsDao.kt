@@ -16,9 +16,6 @@ internal interface TransactionsDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun update(transaction: Transaction): Int
 
-    @Query("SELECT * FROM Transactions WHERE id = :id")
-    suspend fun getById(id: Long): Transaction?
-
     @Query("DELETE FROM Transactions WHERE request_date <= :timestamp OR response_date <= :timestamp")
     suspend fun deleteTransactionsCreatedBefore(timestamp: Long): Int
 

@@ -1,6 +1,5 @@
 package com.nech9ev.fifthelement.internal
 
-import android.util.Log
 import com.nech9ev.fifthelement.internal.data.NetworkModule
 import com.nech9ev.fifthelement.internal.data.NetworkTransactionsRequest
 import com.nech9ev.fifthelement.internal.domain.DeviceConfig
@@ -17,16 +16,16 @@ internal class TransactionSender {
     suspend fun sendTransactions(
         transactions: List<Transaction>,
         deviceConfig: DeviceConfig,
+        postUrl: String,
     ) = withContext(Dispatchers.IO) {
-        transactions.forEach {
-            Log.e("TransactionSender", "sendTransaction: $it" )
-        }
         try {
             client.post<Any> {
                 contentType(ContentType.Application.Json)
-                url("http://172.20.10.5:8080/api/write/networkTraffic")
+                url(postUrl)
                 body = NetworkTransactionsRequest(
-                    transactions = transactions.map { transaction -> transaction.toDto() },
+                    transactions = transactions.map { transaction -> transaction.toDto().also {
+                        it.threads = threadNames()
+                    } },
                     deviceConfig = deviceConfig,
                 )
             }
@@ -34,5 +33,15 @@ internal class TransactionSender {
         } catch (e: Throwable) {
             false
         }
+    }
+
+    private fun threadNames(): String {
+        val threads = arrayOfNulls<Thread>(Thread.activeCount())
+        val numThreads = Thread.enumerate(threads)
+        val threadNames = StringBuilder()
+        for (i in 0 until numThreads) {
+            threadNames.append("${threads[i]?.name ?: "unknown"} ;")
+        }
+        return threadNames.toString()
     }
 }

@@ -14,7 +14,6 @@ class DownloadManagerActivity : AppCompatActivity() {
     private lateinit var catButton: Button
     private lateinit var dogButton: Button
 
-//    private lateinit var downloadManagerBroadcastReceiver: DownloadManagerBroadcastReceiver
     private var downloadmanager: DownloadManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

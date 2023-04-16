@@ -1,6 +1,7 @@
 package com.nech9ev.fifthelement.internal
 
 import android.content.Context
+import com.nech9ev.fifthelement.TransactionManagerConfig
 import com.nech9ev.fifthelement.internal.data.DeviceConfigUtils
 import com.nech9ev.fifthelement.internal.database.DatabaseRepositoryProvider
 import com.nech9ev.fifthelement.internal.domain.Transaction
@@ -13,8 +14,9 @@ import kotlinx.coroutines.withContext
 
 class TransactionCollector(
     applicationContext: Context,
+    managerConfig: TransactionManagerConfig,
 ) {
-    private val transactionsManager = TransactionsManager(applicationContext)
+    private val transactionsManager = TransactionsManager(applicationContext, managerConfig)
     private val scope = CoroutineScope(Job())
 
     private val databaseRepository = DatabaseRepositoryProvider.provide(applicationContext)
@@ -29,7 +31,7 @@ class TransactionCollector(
         }
     }
 
-    @Synchronized //todo lock on object (not class)
+    @Synchronized
     fun collectRequest(transaction: Transaction) {
         scope.launch {
             val id: Long = withContext(Dispatchers.IO) {

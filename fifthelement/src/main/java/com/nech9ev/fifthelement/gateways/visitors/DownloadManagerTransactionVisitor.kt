@@ -32,14 +32,12 @@ class DownloadManagerTransactionVisitor {
                 transaction.requestContentType = cursor.getString(mediaTypeIndex)
                 transaction.responseDate = System.currentTimeMillis()
                 cursor.close()
-                Log.e("DownloadManagerBroadcastReceiver", "Downloaded ${transaction.responseSize} bytes")
                 return
             } else {
                 val uriIndex: Int = cursor.getColumnIndex(DownloadManager.COLUMN_URI)
                 transaction.error = true.toString()
                 transaction.uri = cursor.getString(uriIndex)
                 transaction.responseDate = System.currentTimeMillis()
-                Log.e("DownloadManagerBroadcastReceiver", "Error while downloaded")
                 cursor.close()
                 return
             }

@@ -20,7 +20,6 @@ import java.io.InputStream
 class CustomGlideApp : AppGlideModule() {
 
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-        Log.e("Glide", "registerComponents")
         val client = RetrofitProvider.provideOkhttpClient(context)
         val factory: OkHttpUrlLoader.Factory = OkHttpUrlLoader.Factory(client)
         glide.registry.replace(

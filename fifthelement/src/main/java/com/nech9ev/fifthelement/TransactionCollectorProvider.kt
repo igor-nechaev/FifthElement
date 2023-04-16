@@ -10,13 +10,13 @@ object TransactionCollectorProvider {
     private var collector: TransactionCollector? = null
 
     @Synchronized
-    fun provide(applicationContext: Context): TransactionCollector {
-        return collector ?: initialize(applicationContext)
+    fun provide(applicationContext: Context, managerConfig: TransactionManagerConfig = TransactionManagerConfig()): TransactionCollector {
+        return collector ?: initialize(applicationContext, managerConfig)
     }
 
-    @Synchronized //todo lock on any
-    private fun initialize(applicationContext: Context): TransactionCollector {
-        return TransactionCollector(applicationContext).also {
+    @Synchronized
+    private fun initialize(applicationContext: Context, managerConfig: TransactionManagerConfig): TransactionCollector {
+        return TransactionCollector(applicationContext, managerConfig).also {
             collector = it
         }
     }

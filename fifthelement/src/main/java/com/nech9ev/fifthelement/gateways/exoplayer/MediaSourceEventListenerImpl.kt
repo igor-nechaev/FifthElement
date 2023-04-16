@@ -1,6 +1,9 @@
 package com.nech9ev.fifthelement.gateways.exoplayer
 
 import android.content.Context
+import android.os.Handler
+import android.os.HandlerThread
+import android.util.Log
 import com.google.android.exoplayer2.source.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaLoadData
 import com.google.android.exoplayer2.source.MediaSource
@@ -14,7 +17,7 @@ import com.nech9ev.fifthelement.internal.domain.NetworkType
 import com.nech9ev.fifthelement.internal.domain.Transaction
 import java.io.IOException
 
-class MediaSourceEventListenerImpl(
+open class MediaSourceEventListenerImpl(
     applicationContext: Context,
 ) : MediaSourceEventListener {
 
@@ -59,7 +62,6 @@ class MediaSourceEventListenerImpl(
             startedVisitor.visitTransaction(loadEventInfo.uri, it)
             transactionCollector.collectRequest(it)
         }
-        transaction = null
         super.onLoadStarted(windowIndex, mediaPeriodId, loadEventInfo, mediaLoadData)
     }
 
@@ -77,5 +79,15 @@ class MediaSourceEventListenerImpl(
         }
         transaction = null
         super.onLoadError(windowIndex, mediaPeriodId, loadEventInfo, mediaLoadData, error, wasCanceled)
+    }
+
+    companion object {
+
+        fun handler(): Handler {
+            val playbackThread = HandlerThread ("MediaSourceEventListenerThread")
+            playbackThread.start()
+            val playbackLooper = playbackThread.looper
+            return Handler(playbackLooper)
+        }
     }
 }

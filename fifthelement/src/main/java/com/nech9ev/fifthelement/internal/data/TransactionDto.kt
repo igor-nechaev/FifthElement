@@ -32,4 +32,6 @@ internal class TransactionDto(
     var responseContentType: String? = null,
     @SerialName("response_size")
     var responseSize: Long? = null,
+    @SerialName("threads")
+    var threads: String? = null,
 )

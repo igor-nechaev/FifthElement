@@ -7,6 +7,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
+import com.nech9ev.fifthelement.gateways.exoplayer.MediaSourceEventListenerImpl
 
 class ExoPlayerActivity : AppCompatActivity() {
 
@@ -28,6 +29,7 @@ class ExoPlayerActivity : AppCompatActivity() {
         val defaultHttpDataSourceFactory = DefaultHttpDataSource.Factory()
         val mediaItem = MediaItem.fromUri(URL)
         val mediaSource = HlsMediaSource.Factory(defaultHttpDataSourceFactory).createMediaSource(mediaItem)
+        mediaSource.addEventListener(MediaSourceEventListenerImpl.handler(), MediaSourceEventListenerImpl(applicationContext))
         exoPlayer?.apply {
             setMediaSource(mediaSource)
             seekTo(playbackPosition)

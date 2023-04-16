@@ -1,24 +1,21 @@
 package com.nech9ev.fifthelement.internal
 
 import android.content.Context
-import android.util.Log
+import com.nech9ev.fifthelement.TransactionManagerConfig
 import com.nech9ev.fifthelement.internal.database.DatabaseRepository
 import com.nech9ev.fifthelement.internal.database.DatabaseRepositoryProvider
-import com.nech9ev.fifthelement.internal.domain.DeviceConfig
 import com.nech9ev.fifthelement.internal.domain.Transaction
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicLong
 
 class TransactionsManager(
     applicationContext: Context,
-    transactionsUploadSize: Long = 2L,
+    private val managerConfig: TransactionManagerConfig,
 ) {
 
     private val transactionsUploadSize: AtomicLong = AtomicLong().apply {
-        set(transactionsUploadSize)
+        set(managerConfig.transactionsUploadSize)
     }
 
     private val lastNotSendId: AtomicLong = AtomicLong().apply {
@@ -30,17 +27,7 @@ class TransactionsManager(
 
     private val transactionsSender = TransactionSender()
 
-    private lateinit var deviceConfig: DeviceConfig
-
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            deviceConfig = repository.getDeviceConfig()
-        }
-    }
-
     suspend fun onNewTransaction(transaction: Transaction) = withContext(Dispatchers.IO) {
-        Log.e("TransactionsManager", "onNewTransaction: $transaction")
-        Log.e("TransactionsManager", "IdLastNotSend: ${lastNotSendId.get()}")
 
         if (isFirstTransactionInBatch()) {
             lastNotSendId.set(transaction.id)
@@ -56,28 +43,26 @@ class TransactionsManager(
                     idFrom = lastNotSendId.get(),
                     idTo = transaction.id,
                 ),
-            deviceConfig = deviceConfig,
+            deviceConfig = repository.getDeviceConfig(),
+            postUrl = managerConfig.postUrl,
         )
-        Log.e("TransactionsManager", "sendTransactions isSuccess: $isSuccess")
 
         handleSendResult(isSuccess, transaction)
     }
 
     private fun shouldSendRequests(transaction: Transaction): Boolean {
         return ((transaction.id - lastNotSendId.get()) % transactionsUploadSize.get()) == 0L
-                    && transaction.error == null
+                && transaction.error == null
     }
 
-    private suspend fun handleSendResult(isSuccess : Boolean, lastTransaction: Transaction) {
+    private suspend fun handleSendResult(isSuccess: Boolean, lastTransaction: Transaction) {
         if (isSuccess) {
-            Log.e("TransactionsManager", "SUCCESS SEND")
             handleSuccessSend(lastTransaction)
             lastNotSendId.set(initialNotSendTransactionId)
         }
     }
 
     private suspend fun handleSuccessSend(lastTransaction: Transaction) {
-        Log.e("TransactionsManager", lastTransaction.toString())
         lastTransaction.requestDate?.let {
             repository.deleteTransactionsCreatedBefore(it)
             return

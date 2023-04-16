@@ -13,6 +13,7 @@ class ItmohackApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         initializeFresco()
+        initializePicasso()
     }
 
     private fun initializeFresco() {
@@ -22,10 +23,10 @@ class ItmohackApplication : Application() {
         Fresco.initialize(applicationContext, config);
     }
 
-//    private fun initializePicasso() {
-//        val picasso: Picasso = Picasso.Builder(applicationContext)
-//            .downloader(OkHttp3Downloader(RetrofitProvider.provideOkhttpClient(applicationContext)))
-//            .build()
-//        Picasso.setSingletonInstance(picasso)
-//    }
+    private fun initializePicasso() {
+        val picasso: Picasso = Picasso.Builder(applicationContext)
+            .downloader(OkHttp3Downloader(RetrofitProvider.provideOkhttpClient(applicationContext)))
+            .build()
+        Picasso.setSingletonInstance(picasso)
+    }
 }

@@ -39,6 +39,7 @@ data class Transaction(
     @ColumnInfo(name = "response_size")
     var responseSize: Long? = null,
 ) {
+
     internal fun toDto() = TransactionDto(
         url, uri, type, error, requestDate, responseDate, duration, requestMethod, requestContentType, requestSize, responseCode, responseContentType, responseSize
     )
