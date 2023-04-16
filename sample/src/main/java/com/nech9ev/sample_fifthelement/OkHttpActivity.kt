@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.Space
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.nech9ev.sample_fifthelement.retrofit.RetrofitProvider
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
@@ -12,11 +13,14 @@ import java.io.IOException
 
 class OkHttpActivity : AppCompatActivity() {
 
+    private val okHttpClient: OkHttpClient by lazy {
+        RetrofitProvider.provideOkhttpClient(applicationContext)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ok_http)
         val list = findViewById<ViewGroup>(R.id.list)
-
         Threads.ioPool.execute {
             run("https://cat-fact.herokuapp.com/facts")?.let {
                 val textJson = JSONArray(it)
@@ -43,6 +47,6 @@ class OkHttpActivity : AppCompatActivity() {
         val request: Request = Request.Builder()
             .url(url)
             .build()
-        OkHttpClient().newCall(request).execute().use { response -> return response.body?.string() }
+        okHttpClient.newCall(request).execute().use { response -> return response.body?.string() }
     }
 }

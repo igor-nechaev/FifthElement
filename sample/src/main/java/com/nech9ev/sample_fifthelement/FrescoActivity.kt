@@ -28,6 +28,17 @@ class FrescoActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+//        TrafficWorker.startTrafficWorker(applicationContext)
+////        val myWorkRequest = OneTimeWorkRequest.Builder(TrafficObserverWorker::class.java).build()
+////        WorkManager.getInstance(applicationContext).enqueue(myWorkRequest)
+////        WorkManager.getInstance(applicationContext).getWorkInfoByIdLiveData(myWorkRequest.id)
+////            .observe(this) { workInfo ->
+////                Log.e("WorkManager", workInfo.state.toString())
+////            }
+    }
+
     private fun getAnimal() {
         val animal = SAMPLE_URIS_PNG[position]
         val request = ImageRequestBuilder

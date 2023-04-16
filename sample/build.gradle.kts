@@ -55,7 +55,10 @@ dependencies {
     implementation ("com.squareup.okhttp3:okhttp:4.10.0")
     implementation ("com.google.android.exoplayer:exoplayer:2.18.5")
     implementation ("com.facebook.fresco:fresco:3.0.0")
-    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    kapt ("com.github.bumptech.glide:compiler:4.12.0")
+    implementation ("com.github.bumptech.glide:okhttp3-integration:4.12.0")
+    kapt("com.github.bumptech.glide:compiler:4.15.1")
     implementation ("com.squareup.picasso:picasso:2.8")
 
     implementation (platform("com.google.firebase:firebase-bom:31.5.0"))
@@ -67,6 +70,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:adapter-rxjava3:2.9.0")
     implementation ("com.squareup.okhttp3:okhttp:4.10.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation ("com.facebook.fresco:imagepipeline-okhttp3:3.0.0")
 
     //RX
     implementation ("io.reactivex.rxjava3:rxandroid:3.0.2")
@@ -79,6 +83,7 @@ dependencies {
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("androidx.work:work-gcm:2.8.1")
     implementation("androidx.work:work-multiprocess:2.8.1")
+    implementation("com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2")
 
     implementation(project(":fifthelement"))
 }

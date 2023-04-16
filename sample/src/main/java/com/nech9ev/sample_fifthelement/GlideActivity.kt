@@ -17,8 +17,6 @@ class GlideActivity : AppCompatActivity() {
         cat1 = findViewById(R.id.cat_photo_1)
         cat2 = findViewById(R.id.cat_photo_2)
         cat3 = findViewById(R.id.cat_photo_3)
-
-        bindImages()
     }
 
     override fun onStart() {

@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.nech9ev.ifthelement"
+    namespace = "com.nech9ev.fifthelement"
     compileSdk = 33
 
     defaultConfig {
@@ -48,6 +48,7 @@ dependencies {
     implementation("io.ktor:ktor-client-serialization:1.6.7")
     implementation("androidx.room:room-ktx:2.5.1")
     implementation("androidx.room:room-runtime:2.5.1")
+    implementation("android.arch.work:work-runtime:1.0.1")
     kapt("androidx.room:room-compiler:2.5.1")
-    testImplementation("junit:junit:4.13.2")
+    implementation ("com.google.android.exoplayer:exoplayer:2.18.5")
 }

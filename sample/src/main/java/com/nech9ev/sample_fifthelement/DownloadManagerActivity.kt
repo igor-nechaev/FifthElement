@@ -2,20 +2,25 @@ package com.nech9ev.sample_fifthelement
 
 import android.app.DownloadManager
 import android.content.Context
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import com.nech9ev.fifthelement.gateways.DownloadManagerBroadcastReceiver
 
 class DownloadManagerActivity : AppCompatActivity() {
     private lateinit var catButton: Button
     private lateinit var dogButton: Button
 
+//    private lateinit var downloadManagerBroadcastReceiver: DownloadManagerBroadcastReceiver
+    private var downloadmanager: DownloadManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_downloadmanager)
-
+        downloadmanager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         catButton = findViewById(R.id.cat_button)
         dogButton = findViewById(R.id.dog_button)
 
@@ -27,9 +32,12 @@ class DownloadManagerActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        downloadmanager = null
+        super.onDestroy()
+    }
+
     private fun download(uriString: String, type: String) {
-        val downloadmanager: DownloadManager =
-            getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val uri: Uri = Uri.parse(uriString)
         val request: DownloadManager.Request = DownloadManager.Request(uri)
         request.setTitle("Random $type")
@@ -39,7 +47,7 @@ class DownloadManagerActivity : AppCompatActivity() {
             Environment.DIRECTORY_DOWNLOADS,
             uri.lastPathSegment
         )
-        downloadmanager.enqueue(request)
+        downloadmanager?.enqueue(request)
     }
 
     companion object {
