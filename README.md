@@ -32,4 +32,12 @@
 
 ## Server Integration
 
-Pair with [fifth-element-server](https://github.com/SmartOven/fifth-element-server/tree/main) to store and analyze collected traffic data.
+Pair with [fifth-element-server](https://github.com/SmartOven/fifth-element-server/tree/main) to store and analyze collected traffic 
+data.
+
+## SDK Architecture
+<img width="1075" alt="Screenshot 2025-05-31 at 5 03 19 pm" src="https://github.com/user-attachments/assets/a1aea5d2-2dc9-4ec5-bf43-14a7583ebe46" />
+
+## Live Demo
+[https://www.youtube.com/watch?v=LA4WxK_76ms&ab_channel=YarikPanteleev](https://www.youtube.com/watch?v=LA4WxK_76ms&ab_channel=YarikPanteleev)
+
